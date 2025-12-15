@@ -4,8 +4,16 @@ import json
 import tree_sitter_python as tspython
 from tree_sitter import Language, Parser
 
-def main():
-    target_file = "test.py"
+def main(target_file: str):
+    """
+    Ce script analyse un fichier Python spécifié en utilisant `tree-sitter` 
+    pour en extraire les éléments non-mots-clés. Il identifie les identifiants, 
+    les chaînes de caractères, les entiers, les flottants, les booléens et `None`.
+    Les éléments extraits sont ensuite sauvegardés dans un fichier JSON 
+    portant le même nom que le fichier source, avec une extension `.json`.    
+    """
+
+    # permet l'appel du script en ligne de commande
     if len(sys.argv) > 1:
         target_file = sys.argv[1]
     
@@ -18,7 +26,6 @@ def main():
         parser = Parser(PY_LANGUAGE)
     except Exception as e:
         print(f"Error initializing parser: {e}")
-        # Fallback or older API handling if needed, but 0.22+ uses this
         return
 
     with open(target_file, "rb") as f:
@@ -41,8 +48,6 @@ def main():
     }
 
     def traverse(node):
-        # We check the type
-        # For strings, we want the whole string literal including quotes
         if node.type == "string":
             text = source_code[node.start_byte:node.end_byte].decode("utf8")
             non_keywords.append(text)
@@ -65,4 +70,4 @@ def main():
     print(f"Successfully extracted {len(non_keywords)} items to {output_filename}")
 
 if __name__ == "__main__":
-    main()
+    main("test.py")
