@@ -14,3 +14,6 @@ Ils permettent d'utiliser les modèles de BERT
 # modele_camemBERT
 Il renvoie une valeur d'écart entre une paire de mot, malheureusement on ne peut pas l'utiliser comme écart pour déterminer
 un antonyme d'un mot en partant d'un mot donné.
+
+# modèle pré-fait cc.fr.300.bin
+Le problème c'est que le modèle fait 2M de vecteurs de + de 300 dimensions, donc il est trop gros pour être charger.
