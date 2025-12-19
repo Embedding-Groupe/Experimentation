@@ -34,20 +34,20 @@ def calculatrice():
 
         continuer = input("voulez-vous continuez ? (Y/n)\n")
 
-        erreur = 1
+        erreurSortie = 1
 
-        while erreur == 1:
+        while erreurSortie == 1:
             if continuer == "" or continuer == "Y" or continuer =="y":
                 menu = True
-                erreur = 0
+                erreurSortie = 0
             
             elif continuer == "n" or continuer == "N":
                 menu = False
-                erreur = 0
+                erreurSortie = 0
 
             else:
                 print("Erreur dans la saisie \n", end="", flush=True)
-                erreur = 1
+                erreurSortie = 1
 
 if __name__ == "__main__":
     calculatrice()

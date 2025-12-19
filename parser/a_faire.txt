@@ -1,0 +1,6 @@
+- Sortie :
+    - on ne veut pas : ", \, type(int, input), end.
+    - séparation des mots.
+    - mots uniques associés avec leur fréquence.
+
+- Récupération des chaines de caractères pertinantes ?

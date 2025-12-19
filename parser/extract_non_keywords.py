@@ -4,7 +4,7 @@ import json
 import tree_sitter_python as tspython
 from tree_sitter import Language, Parser
 
-def main(target_file: str):
+def main(target_file=None):
     """
     Ce script analyse un fichier Python spécifié en utilisant `tree-sitter` 
     pour en extraire les éléments non-mots-clés. Il identifie les identifiants, 
@@ -14,8 +14,11 @@ def main(target_file: str):
     """
 
     # permet l'appel du script en ligne de commande
-    if len(sys.argv) > 1:
-        target_file = sys.argv[1]
+    if target_file is None:
+        if len(sys.argv) > 1:
+            target_file = sys.argv[1]
+        else:
+            target_file = "test.py"
     
     if not os.path.exists(target_file):
         print(f"File {target_file} not found.")
@@ -39,21 +42,36 @@ def main(target_file: str):
     # Types to keep
     KEEP_TYPES = {
         "identifier",
-        "string",
-        "integer", 
-        "float",
-        "true",
-        "false",
-        "none"
+        # à voir plus tard si interressant "string", -> les chaines de caractères.
     }
 
     def traverse(node):
+        """
+        Fonction de parcours du parse tree.
+        """
         if node.type == "string":
-            text = source_code[node.start_byte:node.end_byte].decode("utf8")
-            non_keywords.append(text)
-            return # Do not traverse inside string
+            # Mise en place de la récupération des chaines de caractères.
+            # on ne rentre pas dedans on renvoie seulement la chaine de caractères.
+            return 
         
-        if node.type in KEEP_TYPES:
+        if node.type == "identifier":
+            # les identifiants sont les mots non-clés, mais aussi les fonctions 
+            # de transformations de types (int, float, bool, None).
+            # On regarde donc le contexte de l'appel pour ne pas les récupérer.
+            
+            # 1. Appel de fonction : ignorer si c'est une fonction appelée
+            if node.parent and node.parent.type == 'call':
+                func_node = node.parent.child_by_field_name('function')
+                if func_node and func_node.id == node.id:
+                    return # Skip l'identifiant (c'est le nom de la fonction appelée)
+
+            # 2. Argument clé/valeur : skip si c'est le nom de l'argument
+            if node.parent and node.parent.type == 'keyword_argument':
+                 name_node = node.parent.child_by_field_name('name')
+                 if name_node and name_node.id == node.id:
+                     return # Skip l'identifiant (c'est le nom de l'argument)
+            
+            # Si on passe les filtres, on garde l'identifiant
             text = source_code[node.start_byte:node.end_byte].decode("utf8")
             non_keywords.append(text)
         
@@ -70,4 +88,4 @@ def main(target_file: str):
     print(f"Successfully extracted {len(non_keywords)} items to {output_filename}")
 
 if __name__ == "__main__":
-    main("test.py")
+    main()
